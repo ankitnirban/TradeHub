@@ -1,18 +1,19 @@
 package com.example.tradehub.user.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
@@ -28,7 +29,7 @@ public class User implements UserDetails {
     private String email;
 
     @Column(nullable = false)
-    private String password;
+    private String encryptedPassword;
 
     private String address;
 
@@ -37,17 +38,16 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-    @Override
     public String getPassword() {
-        return this.password;
+        return this.encryptedPassword;
     }
 
     @Override
     public String getUsername() {
-        return this.id.toString();
+        return this.email;
     }
 }
 

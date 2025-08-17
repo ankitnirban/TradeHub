@@ -6,9 +6,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserCreateRequest {
     @NotBlank
     private String firstName;
@@ -27,12 +32,12 @@ public class UserCreateRequest {
     @NotNull
     private Role role;
 
-    public User toUserEntity() {
+    public User toUserEntity(PasswordEncoder passwordEncoder) {
         User user = new User();
         user.setFirstName(this.firstName);
         user.setLastName(this.lastName);
         user.setEmail(this.email);
-        user.setPassword(this.password);
+        user.setEncryptedPassword(passwordEncoder.encode(this.password));
         user.setAddress(this.address);
         user.setRole(this.role);
         return user;

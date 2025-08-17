@@ -1,5 +1,5 @@
 package com.example.tradehub.user.model;
 
 public enum Role {
-    CUSTOMER, ADMIN
+    ROLE_CUSTOMER, ROLE_ADMIN
 }
