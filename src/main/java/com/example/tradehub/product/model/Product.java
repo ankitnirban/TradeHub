@@ -1,12 +1,26 @@
 package com.example.tradehub.product.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 
 @Entity
-public record Product(
-        @Id
-        Long id,
-        String name,
-        String description
-) {}
+public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    private String name;
+
+    private String description;
+
+    private BigDecimal price;
+
+    private Integer quantityInStock;
+
+    private String imageUrl;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private Category category;
+}
