@@ -1,5 +1,6 @@
 package com.example.tradehub.product.model;
 
+import com.example.tradehub.product.repository.CategoryRepository;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,4 +30,16 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
+
+    public static Product toProductEntity(ProductCreateRequest productCreateRequest, Category category) {
+        return new Product(
+                null,
+                productCreateRequest.getName(),
+                productCreateRequest.getDescription(),
+                productCreateRequest.getPrice(),
+                productCreateRequest.getQuantityInStock(),
+                productCreateRequest.getImageUrl(),
+                category
+        );
+    }
 }

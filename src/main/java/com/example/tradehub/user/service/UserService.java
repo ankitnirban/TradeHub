@@ -1,5 +1,6 @@
 package com.example.tradehub.user.service;
 
+import com.example.tradehub.user.model.Role;
 import com.example.tradehub.auth.model.UserCreateRequest;
 import com.example.tradehub.user.model.User;
 import org.springframework.context.annotation.Lazy;
