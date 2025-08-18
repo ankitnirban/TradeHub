@@ -1,5 +1,6 @@
 package com.example.tradehub.user.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,8 +29,9 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
-    private String encryptedPassword;
+    private String password;
 
     private String address;
 
@@ -41,8 +43,9 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
+    @Override
     public String getPassword() {
-        return this.encryptedPassword;
+        return this.password;
     }
 
     @Override

@@ -2,7 +2,9 @@ package com.example.tradehub.user.service;
 
 import com.example.tradehub.auth.model.UserCreateRequest;
 import com.example.tradehub.user.model.User;
+import org.springframework.context.annotation.Lazy;
 import com.example.tradehub.user.repository.UserRepository;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,23 +12,26 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public User createUser(UserCreateRequest userCreateRequest, PasswordEncoder passwordEncoder) {
-        User savedUser = userRepository.save(toUserEntity(userCreateRequest, passwordEncoder));
-        return savedUser;
+    public User createUser(UserCreateRequest userCreateRequest) {
+        User newUser = toUserEntity(userCreateRequest);
+        return userRepository.save(newUser);
     }
 
     public User findByEmail(String email) {
@@ -35,16 +40,17 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User with requested username not found"));
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User with requested email not found"));
+        return user;
     }
 
-    private User toUserEntity(UserCreateRequest userCreateRequest, PasswordEncoder passwordEncoder) {
+    private User toUserEntity(UserCreateRequest userCreateRequest) {
         return new User(
                 null,
                 userCreateRequest.getFirstName(),
                 userCreateRequest.getLastName(),
                 userCreateRequest.getEmail(),
-                passwordEncoder.encode(userCreateRequest.getPassword()),
+                this.passwordEncoder.encode(userCreateRequest.getPassword()),
                 userCreateRequest.getAddress(),
                 userCreateRequest.getRole()
         );

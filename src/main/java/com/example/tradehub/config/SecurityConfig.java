@@ -1,5 +1,6 @@
 package com.example.tradehub.config;
 
+import com.example.tradehub.user.model.Role;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +36,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for stateless REST APIs
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // Allow access to authentication endpoints
-                        .requestMatchers(PathRequest.toH2Console()).permitAll() // Allow access to H2 console
+                        .requestMatchers(PathRequest.toH2Console()).hasAuthority(Role.ROLE_ADMIN.name())
+                        .requestMatchers("/users/all").hasAuthority(Role.ROLE_ADMIN.name()) // Allow access to H2 console
                         .anyRequest().authenticated() // Secure all other requests
                 )
                 .sessionManagement(session -> session
