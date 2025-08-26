@@ -33,7 +33,17 @@ public class ProductService {
     }
 
     public Product createProduct(ProductCreateRequest productCreateRequest) {
-        Product newProduct = toProductEntity(productCreateRequest);
+        Product newProduct = new Product();
+
+        Category category = categoryRepository.findById(productCreateRequest.getCategoryId()).orElseThrow(() -> new CategoryNotFoundException("Category with id " + productCreateRequest.getCategoryId() + " not found."));
+
+        newProduct.setName(productCreateRequest.getName());
+        newProduct.setDescription(productCreateRequest.getDescription());
+        newProduct.setPrice(productCreateRequest.getPrice());
+        newProduct.setQuantityInStock(productCreateRequest.getQuantityInStock());
+        newProduct.setImageUrl(productCreateRequest.getImageUrl());
+        newProduct.setCategory(category);
+
         return productRepository.save(newProduct);
     }
 
@@ -78,18 +88,5 @@ public class ProductService {
         }
 
         return productRepository.save(existingProduct);
-    }
-
-    private Product toProductEntity(ProductCreateRequest productCreateRequest) {
-        Category category = categoryRepository.findById(productCreateRequest.getCategoryId()).orElseThrow(() -> new CategoryNotFoundException("Category with id " + productCreateRequest.getCategoryId() + " not found."));
-        return new Product(
-                null,
-                productCreateRequest.getName(),
-                productCreateRequest.getDescription(),
-                productCreateRequest.getPrice(),
-                productCreateRequest.getQuantityInStock(),
-                productCreateRequest.getImageUrl(),
-                category
-        );
     }
 }
