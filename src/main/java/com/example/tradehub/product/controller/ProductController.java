@@ -1,10 +1,11 @@
 package com.example.tradehub.product.controller;
 
+import com.example.tradehub.product.dto.request.ProductCreateRequestDto;
+import com.example.tradehub.product.dto.request.ProductPatchRequestDto;
+import com.example.tradehub.product.dto.request.ProductUpdateRequestDto;
+import com.example.tradehub.product.dto.response.ProductResponseDto;
+import com.example.tradehub.product.mapper.ProductMapper;
 import com.example.tradehub.product.model.Product;
-import com.example.tradehub.product.model.ProductCreateRequestDto;
-import com.example.tradehub.product.model.ProductPatchRequestDto;
-import com.example.tradehub.product.model.ProductResponse;
-import com.example.tradehub.product.model.ProductUpdateRequestDto;
 import com.example.tradehub.product.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -26,39 +27,43 @@ public class ProductController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<ProductResponse>> getAllProducts() {
-        List<ProductResponse> products = productService.getAllProducts().stream()
-                .map(ProductResponse::fromEntity)
+    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
+        List<ProductResponseDto> products = productService.getAllProducts().stream()
+                .map(ProductMapper::toResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> findProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponseDto> findProductById(@PathVariable Long id) {
         Product product = productService.findProductById(id);
-        return ResponseEntity.ok(ProductResponse.fromEntity(product));
+        ProductResponseDto productResponseDto = ProductMapper.toResponse(product);
+        return ResponseEntity.ok(productResponseDto);
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductCreateRequestDto productCreateRequestDto) {
+    public ResponseEntity<ProductResponseDto> createProduct(@Valid @RequestBody ProductCreateRequestDto productCreateRequestDto) {
         Product createdProduct = productService.createProduct(productCreateRequestDto);
+        ProductResponseDto createdProductResponseDto = ProductMapper.toResponse(createdProduct);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(createdProduct.getId())
                 .toUri();
-        return ResponseEntity.created(location).body(ProductResponse.fromEntity(createdProduct));
+        return ResponseEntity.created(location).body(createdProductResponseDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductUpdateRequestDto productUpdateRequestDto) {
+    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductUpdateRequestDto productUpdateRequestDto) {
         Product updatedProduct = productService.updateProduct(id, productUpdateRequestDto);
-        return ResponseEntity.ok(ProductResponse.fromEntity(updatedProduct));
+        ProductResponseDto updatedProductResponseDto = ProductMapper.toResponse(updatedProduct);
+        return ResponseEntity.ok(updatedProductResponseDto);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProductResponse> patchProduct(@PathVariable Long id, @Valid @RequestBody ProductPatchRequestDto productPatchRequestDto) {
+    public ResponseEntity<ProductResponseDto> patchProduct(@PathVariable Long id, @Valid @RequestBody ProductPatchRequestDto productPatchRequestDto) {
         Product patchedProduct = productService.patchProduct(id, productPatchRequestDto);
-        return ResponseEntity.ok(ProductResponse.fromEntity(patchedProduct));
+        ProductResponseDto patchedProductResponseDto = ProductMapper.toResponse(patchedProduct);
+        return ResponseEntity.ok(patchedProductResponseDto);
     }
 }

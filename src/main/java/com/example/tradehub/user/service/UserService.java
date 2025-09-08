@@ -1,13 +1,10 @@
 package com.example.tradehub.user.service;
 
 import com.example.tradehub.auth.dto.request.UserCreateRequestDto;
-import com.example.tradehub.user.model.Role;
 import com.example.tradehub.user.model.User;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 
 import com.example.tradehub.user.repository.UserRepository;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -32,8 +28,8 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    public User createUser(UserCreateRequestDto userCreateRequest) {
-        User newUser = toUserEntity(userCreateRequest);
+    public User createUser(UserCreateRequestDto userCreateRequestDto) {
+        User newUser = toUserEntity(userCreateRequestDto);
         return userRepository.save(newUser);
     }
 
@@ -47,15 +43,15 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    private User toUserEntity(UserCreateRequestDto userCreateRequest) {
+    private User toUserEntity(UserCreateRequestDto userCreateRequestDto) {
         return new User(
                 null,
-                userCreateRequest.getFirstName(),
-                userCreateRequest.getLastName(),
-                userCreateRequest.getEmail(),
-                this.passwordEncoder.encode(userCreateRequest.getPassword()),
-                userCreateRequest.getAddress(),
-                userCreateRequest.getRole()
+                userCreateRequestDto.getFirstName(),
+                userCreateRequestDto.getLastName(),
+                userCreateRequestDto.getEmail(),
+                this.passwordEncoder.encode(userCreateRequestDto.getPassword()),
+                userCreateRequestDto.getAddress(),
+                userCreateRequestDto.getRole()
         );
     }
 

@@ -2,11 +2,12 @@ package com.example.tradehub.product.service;
 
 import com.example.tradehub.exception.CategoryNotFoundException;
 import com.example.tradehub.exception.ProductNotFoundException;
+import com.example.tradehub.product.dto.request.ProductCreateRequestDto;
+import com.example.tradehub.product.dto.request.ProductPatchRequestDto;
+import com.example.tradehub.product.dto.request.ProductUpdateRequestDto;
+import com.example.tradehub.product.mapper.ProductMapper;
 import com.example.tradehub.product.model.Category;
 import com.example.tradehub.product.model.Product;
-import com.example.tradehub.product.model.ProductCreateRequestDto;
-import com.example.tradehub.product.model.ProductPatchRequestDto;
-import com.example.tradehub.product.model.ProductUpdateRequestDto;
 import com.example.tradehub.product.repository.CategoryRepository;
 import com.example.tradehub.product.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -33,60 +34,30 @@ public class ProductService {
     }
 
     public Product createProduct(ProductCreateRequestDto productCreateRequestDto) {
-        Product newProduct = new Product();
-
-        Category category = categoryRepository.findById(productCreateRequestDto.getCategoryId()).orElseThrow(() -> new CategoryNotFoundException("Category with id " + productCreateRequestDto.getCategoryId() + " not found."));
-
-        newProduct.setName(productCreateRequestDto.getName());
-        newProduct.setDescription(productCreateRequestDto.getDescription());
-        newProduct.setPrice(productCreateRequestDto.getPrice());
-        newProduct.setQuantityInStock(productCreateRequestDto.getQuantityInStock());
-        newProduct.setImageUrl(productCreateRequestDto.getImageUrl());
+        Product newProduct = ProductMapper.toEntity(productCreateRequestDto);
+        Category category = categoryRepository.findById(productCreateRequestDto.getCategoryId())
+                .orElseThrow(() -> new CategoryNotFoundException("Category with id " + productCreateRequestDto.getCategoryId() + " not found."));
         newProduct.setCategory(category);
-
         return productRepository.save(newProduct);
     }
 
     public Product updateProduct(Long id, ProductUpdateRequestDto productUpdateRequestDto) {
         Product existingProduct = findProductById(id);
-
         Category category = categoryRepository.findById(productUpdateRequestDto.getCategoryId())
                 .orElseThrow(() -> new CategoryNotFoundException("Category with id " + productUpdateRequestDto.getCategoryId() + " not found."));
-
-        existingProduct.setName(productUpdateRequestDto.getName());
-        existingProduct.setDescription(productUpdateRequestDto.getDescription());
-        existingProduct.setPrice(productUpdateRequestDto.getPrice());
-        existingProduct.setQuantityInStock(productUpdateRequestDto.getQuantityInStock());
-        existingProduct.setImageUrl(productUpdateRequestDto.getImageUrl());
+        ProductMapper.apply(productUpdateRequestDto, existingProduct);
         existingProduct.setCategory(category);
-
         return productRepository.save(existingProduct);
     }
 
     public Product patchProduct(Long id, ProductPatchRequestDto productPatchRequestDto) {
         Product existingProduct = findProductById(id);
-
-        if (productPatchRequestDto.getName() != null) {
-            existingProduct.setName(productPatchRequestDto.getName());
-        }
-        if (productPatchRequestDto.getDescription() != null) {
-            existingProduct.setDescription(productPatchRequestDto.getDescription());
-        }
-        if (productPatchRequestDto.getPrice() != null) {
-            existingProduct.setPrice(productPatchRequestDto.getPrice());
-        }
-        if (productPatchRequestDto.getQuantityInStock() != null) {
-            existingProduct.setQuantityInStock(productPatchRequestDto.getQuantityInStock());
-        }
-        if (productPatchRequestDto.getImageUrl() != null) {
-            existingProduct.setImageUrl(productPatchRequestDto.getImageUrl());
-        }
+        ProductMapper.applyPatch(productPatchRequestDto, existingProduct);
         if (productPatchRequestDto.getCategoryId() != null) {
             Category category = categoryRepository.findById(productPatchRequestDto.getCategoryId())
                     .orElseThrow(() -> new CategoryNotFoundException("Category with id " + productPatchRequestDto.getCategoryId() + " not found."));
             existingProduct.setCategory(category);
         }
-
         return productRepository.save(existingProduct);
     }
 }

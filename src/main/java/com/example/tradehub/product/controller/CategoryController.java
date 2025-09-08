@@ -1,5 +1,9 @@
 package com.example.tradehub.product.controller;
 
+import com.example.tradehub.product.dto.request.CategoryCreateRequestDto;
+import com.example.tradehub.product.dto.request.CategoryUpdateRequestDto;
+import com.example.tradehub.product.dto.response.CategoryResponseDto;
+import com.example.tradehub.product.mapper.CategoryMapper;
 import com.example.tradehub.product.model.Category;
 import com.example.tradehub.product.service.CategoryService;
 import jakarta.validation.Valid;
@@ -21,32 +25,32 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategories() {
+    public ResponseEntity<List<CategoryResponseDto>> getAllCategories() {
         List<Category> categories = categoryService.getAllCategories();
-        return ResponseEntity.ok(categories);
+        return ResponseEntity.ok(categories.stream().map(CategoryMapper::toResponse).toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable Long id) {
         Category category = categoryService.getCategoryById(id);
-        return ResponseEntity.ok(category);
+        return ResponseEntity.ok(CategoryMapper.toResponse(category));
     }
 
     @PostMapping
-    public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category) {
-        Category createdCategory = categoryService.createCategory(category);
+    public ResponseEntity<CategoryResponseDto> createCategory(@Valid @RequestBody CategoryCreateRequestDto categoryCreateRequestDto) {
+        Category createdCategory = categoryService.createCategory(categoryCreateRequestDto);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(createdCategory.getId())
                 .toUri();
-        return ResponseEntity.created(location).body(createdCategory);
+        return ResponseEntity.created(location).body(CategoryMapper.toResponse(createdCategory));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category category) {
-        Category updatedCategory = categoryService.updateCategory(id, category);
-        return ResponseEntity.ok(updatedCategory);
+    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable Long id, @RequestBody CategoryUpdateRequestDto categoryUpdateRequestDto) {
+        Category updatedCategory = categoryService.updateCategory(id, categoryUpdateRequestDto);
+        return ResponseEntity.ok(CategoryMapper.toResponse(updatedCategory));
     }
 
     @DeleteMapping("/{id}")

@@ -1,4 +1,4 @@
-package com.example.tradehub.product.model;
+package com.example.tradehub.product.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

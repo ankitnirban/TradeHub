@@ -1,9 +1,12 @@
 package com.example.tradehub.product.service;
 
 import com.example.tradehub.exception.CategoryNotFoundException;
+import com.example.tradehub.product.dto.request.CategoryCreateRequestDto;
+import com.example.tradehub.product.dto.request.CategoryUpdateRequestDto;
+import com.example.tradehub.product.mapper.CategoryMapper;
 import com.example.tradehub.product.model.Category;
 import com.example.tradehub.product.repository.CategoryRepository;
-import jakarta.validation.Valid;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,14 +31,14 @@ public class CategoryService {
                         String.format("Category with id %d not found", id)));
     }
 
-    public Category createCategory(@Valid Category category) {
+    public Category createCategory(CategoryCreateRequestDto categoryCreateRequestDto) {
+        Category category = CategoryMapper.toEntity(categoryCreateRequestDto);
         return categoryRepository.save(category);
     }
 
-    public Category updateCategory(Long id, Category category) {
+    public Category updateCategory(Long id, CategoryUpdateRequestDto categoryUpdateRequestDto) {
         Category existingCategory = getCategoryById(id);
-        existingCategory.setName(category.getName());
-        existingCategory.setDescription(category.getDescription());
+        CategoryMapper.apply(categoryUpdateRequestDto, existingCategory);
         return categoryRepository.save(existingCategory);
     }
 
@@ -43,4 +46,6 @@ public class CategoryService {
         Category existingCategory = getCategoryById(id);
         categoryRepository.delete(existingCategory);
     }
+
+    // Mapping moved to CategoryMapper
 }

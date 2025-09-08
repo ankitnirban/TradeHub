@@ -34,7 +34,7 @@ public class AuthController {
             .buildAndExpand(registeredUser.getId())
             .toUri();
 
-        UserResponseDto userResponseDto = toUserResponseDto(registeredUser);
+        UserResponseDto userResponseDto = UserResponseDto.fromEntity(registeredUser);
         return ResponseEntity.created(location).body(userResponseDto);
     }
 
@@ -42,16 +42,5 @@ public class AuthController {
     public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
         LoginResponseDto loginResponseDto = authService.login(loginRequestDto);
         return ResponseEntity.ok(loginResponseDto);
-    }
-
-    private UserResponseDto toUserResponseDto(User user) {
-        return new UserResponseDto(
-            user.getId(),
-            user.getFirstName(),
-            user.getLastName(),
-            user.getEmail(),
-            user.getAddress(),
-            user.getRole()
-        );
     }
 }
