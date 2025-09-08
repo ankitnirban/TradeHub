@@ -3,6 +3,7 @@ package com.example.tradehub.auth.service;
 import com.example.tradehub.auth.dto.request.LoginRequestDto;
 import com.example.tradehub.auth.dto.request.UserCreateRequestDto;
 import com.example.tradehub.auth.dto.response.LoginResponseDto;
+import com.example.tradehub.user.dto.response.UserResponseDto;
 import com.example.tradehub.user.model.User;
 import com.example.tradehub.user.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,7 +24,7 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
-    public User register(UserCreateRequestDto userCreateRequestDto) {
+    public UserResponseDto register(UserCreateRequestDto userCreateRequestDto) {
         return userService.createUser(userCreateRequestDto);
     }
 

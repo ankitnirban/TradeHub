@@ -5,7 +5,6 @@ import com.example.tradehub.auth.dto.request.UserCreateRequestDto;
 import com.example.tradehub.auth.dto.response.LoginResponseDto;
 import com.example.tradehub.auth.service.AuthService;
 import com.example.tradehub.user.dto.response.UserResponseDto;
-import com.example.tradehub.user.model.User;
 import jakarta.validation.Valid;
 
 import java.net.URI;
@@ -27,15 +26,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDto> register(@Valid @RequestBody UserCreateRequestDto userCreateRequestDto) {
-        User registeredUser = authService.register(userCreateRequestDto);
+        UserResponseDto registeredUserResponseDto = authService.register(userCreateRequestDto);
 
         URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
             .path("/users/{id}")
-            .buildAndExpand(registeredUser.getId())
+            .buildAndExpand(registeredUserResponseDto.getId())
             .toUri();
 
-        UserResponseDto userResponseDto = UserResponseDto.fromEntity(registeredUser);
-        return ResponseEntity.created(location).body(userResponseDto);
+        return ResponseEntity.created(location).body(registeredUserResponseDto);
     }
 
     @PostMapping("/login")

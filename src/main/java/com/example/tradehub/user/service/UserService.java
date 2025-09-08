@@ -1,14 +1,13 @@
 package com.example.tradehub.user.service;
 
 import com.example.tradehub.auth.dto.request.UserCreateRequestDto;
+import com.example.tradehub.user.dto.response.UserResponseDto;
 import com.example.tradehub.user.model.User;
-import org.springframework.context.annotation.Lazy;
 
 import com.example.tradehub.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,20 +16,17 @@ import java.util.List;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDto> getAllUsers() {
+        return userRepository.findAll().stream().map(this::toUserResponseDto).toList();
     }
 
-    public User createUser(UserCreateRequestDto userCreateRequestDto) {
-        User newUser = toUserEntity(userCreateRequestDto);
-        return userRepository.save(newUser);
+    public UserResponseDto createUser(UserCreateRequestDto userCreateRequestDto) {
+        return toUserResponseDto(userRepository.save(toUserEntity(userCreateRequestDto)));
     }
 
     public User findByEmail(String email) {
@@ -43,20 +39,31 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    private User toUserEntity(UserCreateRequestDto userCreateRequestDto) {
-        return new User(
-                null,
-                userCreateRequestDto.getFirstName(),
-                userCreateRequestDto.getLastName(),
-                userCreateRequestDto.getEmail(),
-                this.passwordEncoder.encode(userCreateRequestDto.getPassword()),
-                userCreateRequestDto.getAddress(),
-                userCreateRequestDto.getRole()
+    public UserResponseDto getUserById(Long id) {
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found."));
+        return toUserResponseDto(existingUser);
+    }
+
+    private UserResponseDto toUserResponseDto(User user) {
+        return new UserResponseDto(
+            user.getId(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getEmail(),
+            user.getPassword(),
+            user.getRole()
         );
     }
 
-    public User getUserById(Long id) {
-        User existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found.")); //TODO: Create custom exception.
-        return existingUser;
+    private User toUserEntity(UserCreateRequestDto userCreateRequestDto) {
+        return new User(
+            null,
+            userCreateRequestDto.getFirstName(),
+            userCreateRequestDto.getLastName(),
+            userCreateRequestDto.getEmail(),
+            userCreateRequestDto.getPassword(),
+            userCreateRequestDto.getAddress(),
+            userCreateRequestDto.getRole()
+        );
     }
 }
