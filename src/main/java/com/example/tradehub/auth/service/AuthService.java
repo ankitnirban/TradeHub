@@ -1,8 +1,8 @@
 package com.example.tradehub.auth.service;
 
-import com.example.tradehub.auth.model.LoginRequest;
-import com.example.tradehub.auth.model.LoginResponse;
-import com.example.tradehub.auth.model.UserCreateRequest;
+import com.example.tradehub.auth.dto.request.LoginRequestDto;
+import com.example.tradehub.auth.dto.request.UserCreateRequestDto;
+import com.example.tradehub.auth.dto.response.LoginResponseDto;
 import com.example.tradehub.user.model.User;
 import com.example.tradehub.user.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,20 +23,20 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
-    public User register(UserCreateRequest userCreateRequest) {
-        return userService.createUser(userCreateRequest);
+    public User register(UserCreateRequestDto userCreateRequestDto) {
+        return userService.createUser(userCreateRequestDto);
     }
 
-    public LoginResponse login(LoginRequest loginRequest) {
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
+                        loginRequestDto.getUsername(),
+                        loginRequestDto.getPassword()
                 )
         );
-        User existingUser = userService.findByEmail(loginRequest.getUsername());
+        User existingUser = userService.findByEmail(loginRequestDto.getUsername());
         String token = jwtService.generateToken(existingUser);
         String jwtExpirationTime = jwtService.getJwtExpirationTime().toString();
-        return new LoginResponse(token, jwtExpirationTime);
+        return new LoginResponseDto(token, jwtExpirationTime);
     }
 }

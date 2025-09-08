@@ -1,10 +1,10 @@
 package com.example.tradehub.product.controller;
 
 import com.example.tradehub.product.model.Product;
-import com.example.tradehub.product.model.ProductCreateRequest;
-import com.example.tradehub.product.model.ProductPatchRequest;
+import com.example.tradehub.product.model.ProductCreateRequestDto;
+import com.example.tradehub.product.model.ProductPatchRequestDto;
 import com.example.tradehub.product.model.ProductResponse;
-import com.example.tradehub.product.model.ProductUpdateRequest;
+import com.example.tradehub.product.model.ProductUpdateRequestDto;
 import com.example.tradehub.product.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -40,8 +40,8 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductCreateRequest productCreateRequest) {
-        Product createdProduct = productService.createProduct(productCreateRequest);
+    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductCreateRequestDto productCreateRequestDto) {
+        Product createdProduct = productService.createProduct(productCreateRequestDto);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -51,14 +51,14 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductUpdateRequest updateRequest) {
-        Product updatedProduct = productService.updateProduct(id, updateRequest);
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductUpdateRequestDto productUpdateRequestDto) {
+        Product updatedProduct = productService.updateProduct(id, productUpdateRequestDto);
         return ResponseEntity.ok(ProductResponse.fromEntity(updatedProduct));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProductResponse> patchProduct(@PathVariable Long id, @Valid @RequestBody ProductPatchRequest patchRequest) {
-        Product patchedProduct = productService.patchProduct(id, patchRequest);
+    public ResponseEntity<ProductResponse> patchProduct(@PathVariable Long id, @Valid @RequestBody ProductPatchRequestDto productPatchRequestDto) {
+        Product patchedProduct = productService.patchProduct(id, productPatchRequestDto);
         return ResponseEntity.ok(ProductResponse.fromEntity(patchedProduct));
     }
 }

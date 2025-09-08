@@ -1,4 +1,4 @@
-package com.example.tradehub.auth.model;
+package com.example.tradehub.auth.dto.request;
 
 import com.example.tradehub.user.model.Role;
 import jakarta.validation.constraints.Email;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserCreateRequest {
+public class UserCreateRequestDto {
     @NotBlank
     private String firstName;
 

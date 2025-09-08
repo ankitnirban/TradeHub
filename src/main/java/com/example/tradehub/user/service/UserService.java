@@ -1,9 +1,11 @@
 package com.example.tradehub.user.service;
 
+import com.example.tradehub.auth.dto.request.UserCreateRequestDto;
 import com.example.tradehub.user.model.Role;
-import com.example.tradehub.auth.model.UserCreateRequest;
 import com.example.tradehub.user.model.User;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+
 import com.example.tradehub.user.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,7 +32,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    public User createUser(UserCreateRequest userCreateRequest) {
+    public User createUser(UserCreateRequestDto userCreateRequest) {
         User newUser = toUserEntity(userCreateRequest);
         return userRepository.save(newUser);
     }
@@ -45,7 +47,7 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    private User toUserEntity(UserCreateRequest userCreateRequest) {
+    private User toUserEntity(UserCreateRequestDto userCreateRequest) {
         return new User(
                 null,
                 userCreateRequest.getFirstName(),
@@ -55,5 +57,10 @@ public class UserService implements UserDetailsService {
                 userCreateRequest.getAddress(),
                 userCreateRequest.getRole()
         );
+    }
+
+    public User getUserById(Long id) {
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found.")); //TODO: Create custom exception.
+        return existingUser;
     }
 }

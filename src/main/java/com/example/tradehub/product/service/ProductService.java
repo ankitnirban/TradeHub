@@ -4,9 +4,9 @@ import com.example.tradehub.exception.CategoryNotFoundException;
 import com.example.tradehub.exception.ProductNotFoundException;
 import com.example.tradehub.product.model.Category;
 import com.example.tradehub.product.model.Product;
-import com.example.tradehub.product.model.ProductCreateRequest;
-import com.example.tradehub.product.model.ProductPatchRequest;
-import com.example.tradehub.product.model.ProductUpdateRequest;
+import com.example.tradehub.product.model.ProductCreateRequestDto;
+import com.example.tradehub.product.model.ProductPatchRequestDto;
+import com.example.tradehub.product.model.ProductUpdateRequestDto;
 import com.example.tradehub.product.repository.CategoryRepository;
 import com.example.tradehub.product.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -32,58 +32,58 @@ public class ProductService {
         return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found."));
     }
 
-    public Product createProduct(ProductCreateRequest productCreateRequest) {
+    public Product createProduct(ProductCreateRequestDto productCreateRequestDto) {
         Product newProduct = new Product();
 
-        Category category = categoryRepository.findById(productCreateRequest.getCategoryId()).orElseThrow(() -> new CategoryNotFoundException("Category with id " + productCreateRequest.getCategoryId() + " not found."));
+        Category category = categoryRepository.findById(productCreateRequestDto.getCategoryId()).orElseThrow(() -> new CategoryNotFoundException("Category with id " + productCreateRequestDto.getCategoryId() + " not found."));
 
-        newProduct.setName(productCreateRequest.getName());
-        newProduct.setDescription(productCreateRequest.getDescription());
-        newProduct.setPrice(productCreateRequest.getPrice());
-        newProduct.setQuantityInStock(productCreateRequest.getQuantityInStock());
-        newProduct.setImageUrl(productCreateRequest.getImageUrl());
+        newProduct.setName(productCreateRequestDto.getName());
+        newProduct.setDescription(productCreateRequestDto.getDescription());
+        newProduct.setPrice(productCreateRequestDto.getPrice());
+        newProduct.setQuantityInStock(productCreateRequestDto.getQuantityInStock());
+        newProduct.setImageUrl(productCreateRequestDto.getImageUrl());
         newProduct.setCategory(category);
 
         return productRepository.save(newProduct);
     }
 
-    public Product updateProduct(Long id, ProductUpdateRequest updateRequest) {
+    public Product updateProduct(Long id, ProductUpdateRequestDto productUpdateRequestDto) {
         Product existingProduct = findProductById(id);
 
-        Category category = categoryRepository.findById(updateRequest.getCategoryId())
-                .orElseThrow(() -> new CategoryNotFoundException("Category with id " + updateRequest.getCategoryId() + " not found."));
+        Category category = categoryRepository.findById(productUpdateRequestDto.getCategoryId())
+                .orElseThrow(() -> new CategoryNotFoundException("Category with id " + productUpdateRequestDto.getCategoryId() + " not found."));
 
-        existingProduct.setName(updateRequest.getName());
-        existingProduct.setDescription(updateRequest.getDescription());
-        existingProduct.setPrice(updateRequest.getPrice());
-        existingProduct.setQuantityInStock(updateRequest.getQuantityInStock());
-        existingProduct.setImageUrl(updateRequest.getImageUrl());
+        existingProduct.setName(productUpdateRequestDto.getName());
+        existingProduct.setDescription(productUpdateRequestDto.getDescription());
+        existingProduct.setPrice(productUpdateRequestDto.getPrice());
+        existingProduct.setQuantityInStock(productUpdateRequestDto.getQuantityInStock());
+        existingProduct.setImageUrl(productUpdateRequestDto.getImageUrl());
         existingProduct.setCategory(category);
 
         return productRepository.save(existingProduct);
     }
 
-    public Product patchProduct(Long id, ProductPatchRequest patchRequest) {
+    public Product patchProduct(Long id, ProductPatchRequestDto productPatchRequestDto) {
         Product existingProduct = findProductById(id);
 
-        if (patchRequest.getName() != null) {
-            existingProduct.setName(patchRequest.getName());
+        if (productPatchRequestDto.getName() != null) {
+            existingProduct.setName(productPatchRequestDto.getName());
         }
-        if (patchRequest.getDescription() != null) {
-            existingProduct.setDescription(patchRequest.getDescription());
+        if (productPatchRequestDto.getDescription() != null) {
+            existingProduct.setDescription(productPatchRequestDto.getDescription());
         }
-        if (patchRequest.getPrice() != null) {
-            existingProduct.setPrice(patchRequest.getPrice());
+        if (productPatchRequestDto.getPrice() != null) {
+            existingProduct.setPrice(productPatchRequestDto.getPrice());
         }
-        if (patchRequest.getQuantityInStock() != null) {
-            existingProduct.setQuantityInStock(patchRequest.getQuantityInStock());
+        if (productPatchRequestDto.getQuantityInStock() != null) {
+            existingProduct.setQuantityInStock(productPatchRequestDto.getQuantityInStock());
         }
-        if (patchRequest.getImageUrl() != null) {
-            existingProduct.setImageUrl(patchRequest.getImageUrl());
+        if (productPatchRequestDto.getImageUrl() != null) {
+            existingProduct.setImageUrl(productPatchRequestDto.getImageUrl());
         }
-        if (patchRequest.getCategoryId() != null) {
-            Category category = categoryRepository.findById(patchRequest.getCategoryId())
-                    .orElseThrow(() -> new CategoryNotFoundException("Category with id " + patchRequest.getCategoryId() + " not found."));
+        if (productPatchRequestDto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(productPatchRequestDto.getCategoryId())
+                    .orElseThrow(() -> new CategoryNotFoundException("Category with id " + productPatchRequestDto.getCategoryId() + " not found."));
             existingProduct.setCategory(category);
         }
 

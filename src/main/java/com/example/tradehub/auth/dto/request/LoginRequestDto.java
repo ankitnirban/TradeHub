@@ -1,11 +1,11 @@
-package com.example.tradehub.auth.model;
+package com.example.tradehub.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class LoginRequest {
+public class LoginRequestDto {
     @NotBlank
     private String username;
     @Size(min = 8)
